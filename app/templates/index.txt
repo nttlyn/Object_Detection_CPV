@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Detection</title>
+    <style>
+        /* CSS cho container chính */
+        .body {
+            background-color: gray;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            height: 100%;
+            /* Chia trang thành hai cột 70% và 30% */
+            gap: 10px;
+
+            /* Khoảng cách giữa các phần tử */
+        }
+
+        /* CSS cho bên trái - video */
+        .left-container {
+            position: relative;
+            background-color: rgb(243, 111, 32);
+        }
+
+        .left-container h1 {
+            color: white;
+            text-align: center;
+        }
+
+        .right-container h1 {
+            color: white;
+            text-align: center;
+            align-items: center;
+        }
+
+        .left-container iframe {
+            width: 100%;
+            height: 100vh;
+            /* Chiều cao là 100% của viewport */
+        }
+
+        /* CSS cho bên phải - khung thông báo */
+        .right-container {
+            background-color: rgb(0, 73, 158);
+            /* Màu nền của khung thông báo */
+            padding: 20px;
+            /* Khoảng cách bên trong khung thông báo */
+        }
+
+        .motion {
+            text-align: center;
+        }
+
+        .right-container a {
+            color: white;
+        }
+
+        .camera-frame {
+            display: flex;
+            width: 70%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-item{
+            display: flex;
+            justify-content:space-around;    
+            align-items: center;
+            width: 100%;
+        }
+        #logo1{ 
+            width: 10%;
+        }
+        .logo-item-logo{
+          
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        function playVideo(videoName) {
+            window.open('/play_video/' + videoName, '_blank');
+        }
+    
+        // Hàm để cập nhật danh sách video
+        function updateVideoList() {
+            // Sử dụng XMLHttpRequest hoặc Fetch API để tải danh sách video từ server
+            fetch('/get_video_list')  // Sửa đường dẫn này để phù hợp với route Flask của bạn
+                .then(response => response.json())
+                .then(data => {
+                    const videoList = document.getElementById('video-list');
+                    videoList.innerHTML = ''; // Xóa danh sách video hiện tại
+
+                    // Thêm các video mới vào danh sách
+                    data.forEach(video => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = '#';
+                        a.textContent = video.name;
+                        a.onclick = function(){
+                            playVideo(video.name);}
+                        li.appendChild(a);
+                        videoList.appendChild(li);
+                    });
+                });
+        }
+
+        // Tự động cập nhật danh sách video mỗi x giây (ví dụ: mỗi 10 giây)
+        setInterval(updateVideoList, 1000); // Sửa thời gian tương ứng
+
+        // Gọi hàm cập nhật lần đầu khi trang tải
+        updateVideoList();
+    </script>
+</head>
+
+<body>
+    <div class="logo">
+        <div class="logo-item">
+            <div class="logo-item-logo"> <img id="logo1" src="https://uni.fpt.edu.vn/Data/Sites/1/skins/default/img/og-image.png" alt="hehe"></div>
+            
+        </div>
+
+
+
+        <!-- Container chứa cả hai phần -->
+        <div class="container">
+            <!-- Bên trái - video -->
+            <div class="left-container">
+                <h1>Camera</h1>
+                <img class="camera-frame" src="{{ url_for('video_feed') }}" alt="Motion Detection">
+            </div>
+
+            <!-- Bên phải - khung thông báo -->
+            <div class="right-container">
+                <h1>Video List</h1>
+                <ul id="video-list">
+                    <!-- Danh sách video sẽ được cập nhật ở đây -->
+                </ul>
+            </div>
+        </div>
+</body>
+
+</html>
